@@ -1,0 +1,63 @@
+﻿@page
+@model AddEventModel
+@using WebProposal_Part1.Models
+@{
+    ViewData["Title"] = "Add Event";
+}
+
+<h2>Add a New Event</h2>
+
+@if (Model.message != "")
+{
+    <div class="alert alert-danger">@Model.message</div>
+}
+
+@using (Html.BeginForm(FormMethod.Post))
+{
+    <div class="mb-3">
+
+        <label class="form-label">Title</label>
+        @Html.TextBoxFor(m => m.ev.title, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ev.title, "", new { @class = "text-danger" })
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">Category</label>
+        @Html.DropDownListFor(m => m.ev.category, Html.GetEnumSelectList<EventCategory>(), new { @class = "form-select" })
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">Date and Time</label>
+        @Html.TextBoxFor(m => m.ev.eventdate, "{0:yyyy-MM-dd'T'HH:mm}", new { @class = "form-control", type = "datetime-local" })
+        @Html.ValidationMessageFor(m => m.ev.eventdate, "", new { @class = "text-danger" })
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">Venue</label>
+        @Html.TextBoxFor(m => m.ev.venue, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ev.venue, "", new { @class = "text-danger" })
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">Capacity</label>
+        @Html.TextBoxFor(m => m.ev.capacity, new { @class = "form-control", type = "number" })
+        @Html.ValidationMessageFor(m => m.ev.capacity, "", new { @class = "text-danger" })
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Event</button>
+}
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

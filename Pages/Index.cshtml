@@ -1,0 +1,132 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@section PageHeader {
+
+    <h1>Upcoming Events</h1>
+    <p>Browse and register for events happening around campus.</p>
+}
+
+@if (Model.message != "")
+{
+    <div class="alert alert-danger">@Model.message</div>
+}
+
+<div class="row mb-3">
+
+    <div class="col-md-4">
+
+        <input type="text" id="searchBox" class="form-control" placeholder="Search by title..." />
+
+    </div>
+
+    <div class="col-md-4">
+
+        <select id="categoryFilter" class="form-select">
+
+            <option value="All">All Categories</option>
+
+            @foreach (var c in Enum.GetValues(typeof(WebProposal_Part1.Models.EventCategory)))
+
+            {
+
+                <option value="@c">@c</option>
+
+            }
+
+        </select>
+
+    </div>
+
+</div>
+
+<p id="resultCount"></p>
+
+<table class="table">
+    <tr>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Venue</th>
+        <th>Places Left</th>
+        <th></th>
+    </tr>
+
+    @foreach (var e in Model.eventList)
+
+    {
+
+        <tr class="event-row" data-category="@e.category">
+
+            <td>@e.title</td>
+            <td>@e.category</td>
+            <td>@e.eventdate.ToString("dd MMM yyyy, hh:mm tt")</td>
+            <td>@e.venue</td>
+            <td>@e.getSpaces(WebProposal_Part1.Models.DataStore.countRegistrations(e.eventID))</td>
+
+            <td>
+
+                <a href="/Register?id=@e.eventID" class="btn btn-sm btn-primary">Register</a>
+
+                <a href="/Attendees?id=@e.eventID" class="btn btn-sm btn-outline-secondary">Attendees</a>
+                <form method="post" asp-page-handler="Delete" asp-route-id="@e.eventID" class="d-inline delete-form">
+
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+
+                </form>
+
+            </td>
+
+        </tr>
+    }
+</table>
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(function () {
+
+            function filterEvents() {
+                var search = $("#searchBox").val().toLowerCase();
+                var category = $("#categoryFilter").val();
+                var shown = 0;
+
+                $(".event-row").each(function () {
+                    var title = $(this).find("td:first").text().toLowerCase();
+                    var rowCategory = $(this).data("category");
+
+                    var matchSearch = title.includes(search);
+                    var matchCategory = (category === "All" || rowCategory === category);
+
+                    if (matchSearch && matchCategory) {
+
+                        $(this).fadeIn(200);
+                        shown++;
+
+                    } else {
+
+                        $(this).fadeOut(200);
+
+                    }
+
+                });
+
+                $("#resultCount").text(shown + " events found");
+            }
+
+            $("#searchBox").on("keyup", filterEvents);
+            $("#categoryFilter").on("change", filterEvents);
+
+            $(".delete-form").on("submit", function () {
+                return confirm("Are you sure you want to delete?");
+            });
+
+            filterEvents();
+
+        });
+    </script>
+}

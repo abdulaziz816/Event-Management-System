@@ -1,0 +1,82 @@
+﻿@page
+@model AttendeesModel
+@{
+    ViewData["Title"] = "Attendees";
+}
+
+<h2>Event Attendees</h2>
+
+<form method="get" class="row g-3 align-items-center mb-4">
+    <div class="col-md-5">
+        <select name="id" class="form-select">
+            <option value="0">-- Choose an event --</option>
+            @foreach (var e in Model.eventList)
+            {
+                if (Model.ev != null && e.eventID == Model.ev.eventID)
+                {
+                    <option value="@e.eventID" selected>@e.title</option>
+                }
+                else
+                {
+                    <option value="@e.eventID">@e.title</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="showEmails" value="true" id="showEmails" @(Model.showEmails ? "checked" : "") />
+            <label class="form-check-label" for="showEmails">Show email addresses</label>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">View</button>
+    </div>
+</form>
+
+@if (Model.message != "")
+{
+    <div class="alert alert-danger">@Model.message</div>
+}
+
+@if (Model.ev != null)
+{
+    <h4>@Model.ev.title</h4>
+    <p>
+        Registered: <strong>@Model.regList.Count</strong> / @Model.ev.capacity
+        | Places left: <strong>@Model.ev.getSpaces(Model.regList.Count)</strong>
+    </p>
+
+    if (Model.regList.Count == 0)
+    {
+        <div class="alert alert-info">No students have registered for this event yet.</div>
+    }
+    else
+    {
+        <table class="table">
+            <tr>
+                <th>#</th>
+                <th>Student</th>
+                @if (Model.showEmails)
+                {
+                    <th>Email</th>
+                }
+                <th>Registered On</th>
+            </tr>
+
+            @foreach (var r in Model.regList)
+            {
+                var s = Model.findStudent(r.stID);
+                <tr>
+                    <td>@r.registrationID</td>
+                    <td>@(s != null ? s.getName() : r.stID)</td>
+                    @if (Model.showEmails)
+                    {
+                        <td>@(s != null ? s.stMail : "-")</td>
+                    }
+                    <td>@r.registrationDate.ToString("dd MMM yyyy, hh:mm tt")</td>
+                </tr>
+            }
+        </table>
+    }
+}

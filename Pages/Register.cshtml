@@ -1,0 +1,53 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+@if (Model.message != "")
+{
+    <div class="alert @(Model.success ? "alert-success" : "alert-danger")">@Model.message</div>
+}
+
+@if (Model.ev != null)
+{
+    <h2>Register for @Model.ev.title</h2>
+    <p>
+        @Model.ev.category | @Model.ev.eventdate.ToString("dd MMM yyyy, hh:mm tt") | @Model.ev.venue <br />
+        Places left: <strong>@Model.ev.getSpaces(WebProposal_Part1.Models.DataStore.countRegistrations(Model.ev.eventID))</strong>
+    </p>
+
+    @using (Html.BeginForm(FormMethod.Post))
+    {
+        <input type="hidden" name="id" value="@Model.ev.eventID" />
+
+        <div class="mb-3">
+            <label class="form-label">Student ID</label>
+            @Html.TextBoxFor(m => m.st.stID, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.st.stID, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            @Html.TextBoxFor(m => m.st.stName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.st.stName, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            @Html.TextBoxFor(m => m.st.stMail, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.st.stMail, "", new { @class = "text-danger" })
+        </div>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+        <a href="/" class="btn btn-secondary">Back to Events</a>
+    }
+}
+else
+{
+    <a href="/" class="btn btn-secondary">Back to Events</a>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
